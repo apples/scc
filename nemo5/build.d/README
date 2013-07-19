@@ -1,0 +1,3 @@
+The files in this directory will be executed when the library with the matching folder name is built.
+For example, if the build script tries to build "NEMO5/libs/petsc/", it will look for "petsc.sh" in this directory.
+All script in this directory must be executable.

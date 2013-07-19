@@ -1,0 +1,11 @@
+--- WRFV3/arch/Config_new.pl	2013-03-08 12:44:44.000000000 -0500
++++ WRFV3/arch/Config_new.pl.new	2013-05-30 11:33:48.000000000 -0400
+@@ -218,7 +218,7 @@
+ # environment variables JASPERLIB and JASPERINC to paths to library and 
+ # include files to enable this feature prior to running configure.  
+ 
+- $I_really_want_to_output_grib2_from_WRF = "FALSE" ;
++ $I_really_want_to_output_grib2_from_WRF = "TRUE" ;
+ 
+  if ( $ENV{JASPERLIB} && $ENV{JASPERINC} && $I_really_want_to_output_grib2_from_WRF eq "TRUE" )
+    {
