@@ -12,6 +12,9 @@ NETCDF_URL="http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-${NETCDF_VER
 MY_DIR="$(pwd)"
 INSTALL_DIR="${MY_DIR}/install"
 
+# Build concurrency flag
+POWER_LEVEL="-j6"
+
 if [ ! -d "./graphlab" ]
 then
 	git clone https://github.com/graphlab-code/graphlab.git
@@ -38,18 +41,21 @@ export LDFLAGS="${LDFLAGS} -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64"
 #make install
 
 cd "${MY_DIR}/hdf5-${HDF5_VER}/"
-./configure --prefix="${INSTALL_DIR}" --enable-static-exec # --enable-parallel
-make -j12
-make install
+./configure --prefix="${INSTALL_DIR}" --disable-shared --enable-static --enable-static-exec # --enable-parallel
+make clean ${POWER_LEVEL}
+make ${POWER_LEVEL}
+make install ${POWER_LEVEL}
 
 cd "${MY_DIR}/netcdf-${NETCDF_VER}/"
-./configure --prefix="$INSTALL_DIR" --enable-pnetcdf # --enable-hdf4
-make -j12
-make install
+./configure --prefix="$INSTALL_DIR" --enable-pnetcdf --disable-shared --enable-static # --enable-hdf4
+make clean ${POWER_LEVEL}
+make ${POWER_LEVEL}
+make install ${POWER_LEVEL}
 
 cd "${MY_DIR}/graphlab/"
 ./configure --prefix="$INSTALL_DIR"
 cd "./release"
-make -j12
-make install
+make clean ${POWER_LEVEL}
+make ${POWER_LEVEL}
+make install ${POWER_LEVEL}
 
