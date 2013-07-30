@@ -13,7 +13,7 @@ MY_DIR="$(pwd)"
 INSTALL_DIR="${MY_DIR}/install"
 
 # Build concurrency flag
-POWER_LEVEL="-j6"
+POWER_LEVEL="-j12"
 
 if [ ! -d "./graphlab" ]
 then
@@ -54,8 +54,8 @@ make install ${POWER_LEVEL}
 
 cd "${MY_DIR}/graphlab/"
 ./configure --prefix="$INSTALL_DIR"
-cd "./release"
 make clean ${POWER_LEVEL}
+cd "./release"
 make ${POWER_LEVEL}
 make install ${POWER_LEVEL}
 
