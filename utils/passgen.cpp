@@ -24,6 +24,6 @@ char randomChar()
 
 int main(int argc, char** argv)
 {
-    for (int i=0; i<8; ++i) cout << randomChar();
+    for (int i=0; i<12; ++i) cout << randomChar();
     cout << endl;
 }

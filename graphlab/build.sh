@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+alias wcat='wget -q -O -'
+
 HDF_VER="4.2.9"
 HDF5_VER="1.8.11"
 NETCDF_VER="4.3.0"
@@ -42,19 +44,16 @@ export LDFLAGS="${LDFLAGS} -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64"
 
 cd "${MY_DIR}/hdf5-${HDF5_VER}/"
 ./configure --prefix="${INSTALL_DIR}" --disable-shared --enable-static --enable-static-exec # --enable-parallel
-make clean ${POWER_LEVEL}
 make ${POWER_LEVEL}
 make install ${POWER_LEVEL}
 
 cd "${MY_DIR}/netcdf-${NETCDF_VER}/"
 ./configure --prefix="$INSTALL_DIR" --enable-pnetcdf --disable-shared --enable-static # --enable-hdf4
-make clean ${POWER_LEVEL}
 make ${POWER_LEVEL}
 make install ${POWER_LEVEL}
 
 cd "${MY_DIR}/graphlab/"
 ./configure --prefix="$INSTALL_DIR"
-make clean ${POWER_LEVEL}
 cd "./release"
 make ${POWER_LEVEL}
 make install ${POWER_LEVEL}
