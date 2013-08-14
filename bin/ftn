@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$FC" ] && FC=ifort
+FC=$(echo "${FC}" | sed -r 's|^(/data/scc/bin/)?ftn\s*|ifort |')
+echo "[ftn] Chaining ${FC}"
+${FC} $@
+

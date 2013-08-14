@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$CC" ] && CC=icc
+CC=$(echo "${CC}" | sed -r 's|^(/data/scc/bin/)?cc\s*|icc |')
+echo "[cc] Chaining '${CC}'"
+${CC} $@
+

@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$MPICC" ] && MPICC=mpiicc
+MPICC=$(echo "${MPICC}" | sed -r 's|^(/data/scc/bin/)?mpicc\s*|mpiicc |')
+echo "[mpicc] Chaining ${MPICC}"
+${MPICC} $@
+

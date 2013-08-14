@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$CXX" ] && CXX=icpc
+CXX=$(echo "${CXX}" | sed -r 's|^(/data/scc/bin/)?CC\s*|icpc |')
+echo "[CC] Chaining ${CXX}"
+${CXX} $@
+

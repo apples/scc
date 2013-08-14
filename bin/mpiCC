@@ -1,0 +1,6 @@
+#!/bin/bash
+[ -z "$MPICXX" ] && MPICXX=mpiicpc
+MPICXX=$(echo "${MPICXX}" | sed -r 's|^(/data/scc/bin/)?mpiCC\s*|mpiicpc |')
+echo "[mpiCC] Chaining ${MPICXX}"
+${MPICXX} $@
+
