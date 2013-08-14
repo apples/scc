@@ -1,0 +1,306 @@
+diff -purN NEMO5/configure.sh NEMO5.new/configure.sh
+--- NEMO5/configure.sh	2013-03-19 11:40:11.000000000 -0400
++++ NEMO5.new/configure.sh	2013-08-14 14:01:39.000000000 -0400
+@@ -1,99 +1,17 @@
+ #!/bin/bash
+ 
+ let nargs=$#
+-if [ $nargs != 1 ]; then
+-echo "Input parameter is missing. You have to execute:"
+-echo "./configure.sh BUILD_TYPE"
+-echo
+-echo "Available options for BUILD_TYPE:"
+-echo 
+-echo "carter                     (carter.rcac.purdue.edu)"
+-echo "carter-libs                (same as above but uses libs in group's shared application space)"
+-echo "carter-debug-libs          (same as above but with full (python/boost) debuggging)"
+-echo "carter-impi-petsc33        (same as 'carter' but with PETSc 3.3)"
+-echo "carter-impi-petscdev       (same as 'carter' but with PETSc developmental version)"
+-echo "coates-intel64-mpich2      (Intel compiler on {coates,steele,rossmann}.rcac.purdue.edu with MKL)"
+-echo "coates-intel64-mpich2-libs         (same as above but uses libs in group's shared application space)"
+-echo "coates-intel64-mvapich-petsc33 (same as above but with PETSc 3.3)"
+-echo "coates-intel64-mvapich-petsc33-libs      (same as above but without group libraries)"
+-echo "coates-debug-libs          (same as above but with full (python/boost) debugging)"
+-echo "mac                        (for Macs)"
+-echo "nanohub                    (nanohub.org)"
+-echo "sebuntu                    (generic Kubuntu 10.04)"
+-echo "static-ubuntu              (static build on ubuntu)"
+-echo "ranger-intel64             (ranger.tacc.utexas.edu)"
+-echo "jaguar-gcc64               (Cray XT4 supercomputer jaguar.ccs.ornl.gov)"
+-echo "kraken-gcc64               (Cray XT5 supercomputer)"
+-echo "bluewaters                 (BlueWaters supercomputer with gcc)"
+-echo "Tianhe-intel64-mpich2      (Tianhe-1A supercomputer with intel)"
+-echo 
+-echo "configuration is NOT YET done!"
+-else
+-if  [ $1 != "coates-intel64-mpich2" \
+-	-a  $1 != "mac" \
+-	-a  $1 != "carter" \
+-	-a  $1 != "carter-libs" \
+-	-a  $1 != "carter-debug-libs" \
+-        -a  $1 != "carter-impi-petsc33" \
+-        -a  $1 != "carter-impi-petscdev" \
+-	-a  $1 != "coates-intel64-mpich2-libs" \
+-	-a  $1 != "coates-intel64-mvapich-petsc33" \
+-	-a  $1 != "coates-intel64-mvapich-petsc33-libs" \
+-	-a  $1 != "coates-debug-libs" \
+- 	-a $1 != "nanohub" \
+- 	-a $1 != "sebuntu" \
+- 	-a $1 != "ranger-intel64" \
+- 	-a $1 != "jaguar-gcc64" \
+-	-a $1 != "kraken-gcc64" \
+-	-a $1 != "bluewaters" \
+-   -a $1 != "static-ubuntu" \
+-   -a $1 != "Tianhe-intel64-mpich2" ]; then
+-	echo "Incorrect input parameter. Execute ./configure.sh for BUILD_TYPES"
++if [ $nargs != 1 -o $1 != "yggy"]; then
++	echo "It's \"yggy\", you fool!"
+  	echo
+-	echo "configuration is NOT YET done!"
++	echo "Configuration is NOT YET done!"
+ else  	
+-top_directory=`pwd`
+-echo NEMO top directory is $top_directory
+-sed  "s+#PROJECT_TOP_INSERT+PROJECT_TOP = $top_directory+" make.inc.template > make.inc
+-echo Build type is $1
+-if [ $1 == "mac" ]; then
+-	sed  -i "" -e "s+#BUILD_TYPE_INSERT+BUILD_TYPE = $1+" make.inc
+-else
++	top_directory=`pwd`
++	echo NEMO top directory is $top_directory
++	sed  "s+#PROJECT_TOP_INSERT+PROJECT_TOP = $top_directory+" make.inc.template > make.inc
++	echo Build type is $1
+ 	sed  -i "s+#BUILD_TYPE_INSERT+BUILD_TYPE = $1+" make.inc
++	sed  "s+#NEMO_HOME_INSERT+nemo_home := $top_directory/prototype+" prototype/make.common.template > prototype/Make.common
++	echo configuration is done.
+ fi
+-if [ $1 == "sebuntu" ]; then
+-	gunzip $PWD/libs/libmesh/libmesh-0.7.2.tar.gz
+-	tar -xf $PWD/libs/libmesh/libmesh-0.7.2.tar
+-	gzip $PWD/libs/libmesh/libmesh-0.7.2.tar
+-	libmesh_architecture_opt=`ls $PWD/libs/libmesh/libmesh/lib`
+-	libmesh_architecture=${libmesh_architecture_opt/_opt/} 
+-	echo LIBMESH directory is $libmesh_architecture
+-	sed "s+#INSERT_LIBMESH_ARCH+LIBMESH_ARCH = $libmesh_architecture_opt+" mkfiles/make.inc.sebuntu.template > mkfiles/make.inc.sebuntu.temp
+-	sed "s+#INSERT_LIBMESH_TECIO_ARCH+LIBMESH_TECIO_ARCH = $libmesh_architecture+" mkfiles/make.inc.sebuntu.temp > mkfiles/make.inc.sebuntu
+-	rm mkfiles/make.inc.sebuntu.temp
+ 
+-elif [ $1 == "coates-intel64-mpich2-libs" ]; then
+-	libs_top=/apps/group/ncn/NEMO5/libs
+-	sed "s+#INSERT_LIB_TOP+$libs_top+g" mkfiles/make.inc.coates-intel64-mpich2-libs.template > mkfiles/make.inc.coates-intel64-mpich2-libs	
+-elif [ $1 == "coates-intel64-mvapich-petsc33-libs" ]; then
+-	libs_top=/apps/group/ncn/rossmann/NEMO5/petsc33/libs
+-	sed "s+#INSERT_LIB_TOP+$libs_top+g" mkfiles/make.inc.coates-intel64-mvapich-petsc33-libs.template > mkfiles/make.inc.coates-intel64-mvapich-petsc33-libs	
+-elif [ $1 == "carter-libs" ]; then
+-	libs_top=/apps/group/ncn/carter/libs
+-	sed "s+#INSERT_LIB_TOP+$libs_top+g" mkfiles/make.inc.carter-libs.template > mkfiles/make.inc.carter-libs	
+-elif [ $1 == "carter-debug-libs" ]; then
+-	libs_top=/apps/group/ncn/carter_debug/libs
+-	sed "s+#INSERT_LIB_TOP+$libs_top+g" mkfiles/make.inc.carter-debug-libs.template > mkfiles/make.inc.carter-debug-libs	
+-elif [ $1 == "coates-debug-libs" ]; then
+-	libs_top=/apps/group/ncn/NEMO5_rossmann_debug/libs
+-	sed "s+#INSERT_LIB_TOP+$libs_top+g" mkfiles/make.inc.coates-debug-libs.template > mkfiles/make.inc.coates-debug-libs	
+-fi
+-
+-#if [ $1 == "coates-intel64-mpich2-libs" ]; then
+-#sed  "s+#NEMO_HOME_INSERT+nemo_home := $top_directory/prototype+" prototype/make.common.template > prototype/Make.common
+-#else
+-sed  "s+#NEMO_HOME_INSERT+nemo_home := $top_directory/prototype+" prototype/make.common.template > prototype/Make.common
+-#fi
+-echo configuration is done.
+-fi
+-fi
+diff -purN NEMO5/libs/MUMPS/src/Makefile NEMO5.new/libs/MUMPS/src/Makefile
+--- NEMO5/libs/MUMPS/src/Makefile	2013-03-19 11:37:14.000000000 -0400
++++ NEMO5.new/libs/MUMPS/src/Makefile	2013-08-14 14:04:00.000000000 -0400
+@@ -6,6 +6,11 @@
+ 
+ include ../../make.inc
+ 
++CCFLAGS += -I../PORD/include
++CCFLAGS += -L../PORD/lib
++F90FLAGS += -I../PORD/include
++F90FLAGS += -I../PORD/lib
++
+ double:../lib/libdmumps$(PLAT).a
+ simple:../lib/libsmumps$(PLAT).a
+ cmplx16:../lib/libzmumps$(PLAT).a
+diff -purN NEMO5/libs/PDIV/pdivcon.c NEMO5.new/libs/PDIV/pdivcon.c
+--- NEMO5/libs/PDIV/pdivcon.c	2013-03-19 11:37:16.000000000 -0400
++++ NEMO5.new/libs/PDIV/pdivcon.c	2013-08-14 14:03:02.000000000 -0400
+@@ -9,7 +9,7 @@
+ #include <malloc.h>
+ 
+ //MPI
+-#include "mpi.h"
++#include <mpi/mpi.h>
+ 
+ ////////////////////////
+ 
+diff -purN NEMO5/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
+--- NEMO5/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-08-14 14:02:06.000000000 -0400
+@@ -0,0 +1,158 @@
++# I'M GONNA WRECK IT AAAARGHASDLCXCDKASDOPKE
++
++MPIHOME       = /opt/intel/impi/4.1.0.024/intel64
++INCMPI        = -I$(MPIHOME)/include/
++
++# Compilers
++CC            = cc
++CXX           = CC
++CXX_STATIC    = CC
++CPP           = cpp
++MPICC         = cc
++MPICXX        = CC
++GCC           = cc
++F90           = ftn
++MPIF90        = ftn
++F77           = ftn
++MPIF77        = ftn
++LOADER        = $(MPICXX)
++
++# Compiler flags
++#O_LEVEL       = -O2 -fastsse -tp=barcelona-64 -pc=64
++O_LEVEL       = -O3
++CPPFLAGS      = $(O_LEVEL) -DMPICH_IGNORE_CXX_SEEK -DNO_MKL
++CFLAGS        = $(O_LEVEL) -Wall -fPIC
++CXXFLAGS      = $(O_LEVEL) -Wall -fPIC
++LDFLAGS       =
++FCFLAGS       = $(O_LEVEL) -Wall -fPIC
++GCCFLAGS      = $(O_LEVEL) $(PICFLAG)
++F77FLAGS      = $(O_LEVEL) -Wall -fPIC
++F90_LIBS      = -lgfortran
++
++MPI_LIBS      = -lmpi -lmpich
++BLAS          = -lacml -L/usr/lib64/libpthread.a
++LAPACK        =
++LINKS         = -L/usr/X11R6/lib64 -lX11 -lXext -lXdmcp -lXau -lz -ldl -pthread
++
++OPENMP	      = -fopenmp
++LIBSCI        = -L/opt/xt-libsci/10.5.02/gnu/lib -lsci
++
++ARPACK_DIR    = $(PROJECT_TOP)/libs/ARPACK/
++ARPACK_LIBS   = -lparpack -larpack
++
++#BOOST_INCLUDE = -I/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/include
++#LINK_BOOST    = -Wl,-rpath,/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib -L/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib
++
++BOOST_DIR     = $(PROJECT_TOP/libs/boost
++BOOST_INCLUDE = -I$(BOOST_DIR)/include
++LINK_BOOST    = -Wl,-rpath,$(BOOST_DIR)/lib
++
++LINKBOOSTTEST = $(LINK_BOOST) -lboost_unit_test_framework
++MPIEXECTEST   = 
++VTKINC_PATH = $(PROJECT_TOP)/libs/vtk/include/vtk-5.6
++VTKLIB_PATH = $(PROJECT_TOP)/libs/vtk/lib/vtk-5.6
++
++INCVTK     = -I $(VTKINC_PATH)
++
++VTK_LIBS   = -Wl,-rpath,$(VTKLIB_PATH) -L$(VTKLIB_PATH) -lvtkFiltering -lvtkIO -lvtkCommon -lvtksys -lvtkDICOMParser -lvtkNetCDF -lvtkmetaio -lvtksqlite -lvtkpng -lvtkjpeg -lvtktiff -lvtkexpat -lvtkzlib -lvtkGraphics -lvtkImaging
++
++SILO_DIR     = $(PROJECT_TOP)/libs/silo
++SILO_INC     = -I$(SILO_DIR)/include
++SILO_LIB_DIR = $(SILO_DIR)/lib
++SILO_LIBS    = -Wl,-rpath,$(SILO_LIB_DIR) -L$(SILO_LIB_DIR) -lsiloh5 -Wl,-rpath,$(HDF5_DIR)/lib -L$(HDF5_DIR)/lib -lhdf5
++
++# check out silo's config.log for which hdf5 and sz to use
++
++#HDF5_DIR      = $/opt/cray/hdf5/1.8.6/gnu/46
++#HDF5_INCDIR   = $(HDF5_DIR)/include/
++#HDF5_LIBDIR   = $(HDF5_DIR)/lib
++#SZ_LIBDIR     = $(HDF5_DIR)/lib
++
++#PETSCDEV=-dev
++PETSCDEV=
++#PETSCDEV=-p8
++
++LIBMESH_DIR        = $(PROJECT_TOP)/libs/libmesh/libmesh
++LIBMESH_ARCH       = x86_64-unknown-linux-gnu_opt
++LIBMESH_TECIO_ARCH = x86_64-unknown-linux-gnu
++LIBMESH_CONTRIBS   = -lexodusii -lgmv -lgzstream -lnetcdf -lsfcurves -ltriangle -llaspack -lHilbert
++LIBMESH_VERSION    = 0.7.2
++
++# PETSc / SLEPc
++PETSC_REAL_ARCH = linux
++PETSC_CPLX_ARCH = linux-complex
++SLEPC_REAL_ARCH = linux
++SLEPC_CPLX_ARCH = linux-complex
++ifeq ($(PETSCDEV),)
++	PETSC_LIBS            = -lpetscts -lpetscksp -lpetscdm -lpetscmat -lpetscvec -lpetscsnes -lpetscsys
++	PETSC_EXT_LIBS_CPLX   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++	PETSC_EXT_LIBS_REAL   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++else
++ifeq ($(PETSCDEV),-p8)
++	PETSC_LIBS            = -lpetscts -lpetscksp -lpetscdm -lpetscmat -lpetscvec -lpetscsnes -lpetscsys
++	PETSC_EXT_LIBS_CPLX   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++	PETSC_EXT_LIBS_REAL   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++else
++	PETSC_LIBS            = -lpetsc
++	PETSC_EXT_LIBS_CPLX   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++	PETSC_EXT_LIBS_REAL   = -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++endif
++endif
++#from coates config file
++#PETSC_LIBS            = -lpetsc -lhdf5
++#PETSC_EXT_LIBS_CPLX   = -lsuperlu_dist -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++#PETSC_EXT_LIBS_REAL   = -lsuperlu_dist -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++
++
++PETSC_BLAS_LAPACK_DIR = --with-mpiexec=aprun
++PETSC_REAL_BUILD = $(PROJECT_TOP)/libs/petsc$(PETSCDEV)/build-real
++SLEPC_REAL_BUILD = $(PROJECT_TOP)/libs/slepc$(PETSCDEV)/build-real
++PETSC_REAL_INC = -I $(PETSC_REAL_BUILD)/include -I $(PETSC_REAL_BUILD)/$(PETSC_REAL_ARCH)/include
++SLEPC_REAL_INC = -I $(SLEPC_REAL_BUILD)/include -I $(SLEPC_REAL_BUILD)/$(PETSC_REAL_ARCH)/include
++PETSC_REAL_LIBDIR = $(PETSC_REAL_BUILD)/$(PETSC_REAL_ARCH)/lib
++SLEPC_REAL_LIBDIR = $(SLEPC_REAL_BUILD)/$(PETSC_REAL_ARCH)/lib
++PETSC_CPLX_BUILD = $(PROJECT_TOP)/libs/petsc$(PETSCDEV)/build-cplx
++SLEPC_CPLX_BUILD = $(PROJECT_TOP)/libs/slepc$(PETSCDEV)/build-cplx
++PETSC_CPLX_INC = -I $(PETSC_CPLX_BUILD)/include -I $(PETSC_CPLX_BUILD)/$(PETSC_CPLX_ARCH)/include
++SLEPC_CPLX_INC = -I $(SLEPC_CPLX_BUILD)/include -I $(SLEPC_CPLX_BUILD)/$(PETSC_CPLX_ARCH)/include
++PETSC_CPLX_LIBDIR = $(PETSC_CPLX_BUILD)/$(PETSC_CPLX_ARCH)/lib
++SLEPC_CPLX_LIBDIR = $(SLEPC_CPLX_BUILD)/$(PETSC_CPLX_ARCH)/lib
++#PETSC_CPLX_BUILD  = $(PETSC_REAL_BUILD)
++#SLEPC_CPLX_BUILD  = $(SLEPC_REAL_BUILD)
++#PETSC_CPLX_INC    = $(PETSC_REAL_INC)
++#SLEPC_CPLX_INC    = $(SLEPC_REAL_INC)
++#PETSC_CPLX_LIBDIR = $(PETSC_REAL_LIBDIR)
++#SLEPC_CPLX_LIBDIR = $(SLEPC_REAL_LIBDIR)
++#CPPFLAGS += -DNOCOMPLEX
++
++# PAPI - a library to monitor flops etc.
++#PAPI_PATH  = /opt/xt-tools/papi/default/
++#PAPI_PATH = /opt/cray/papi/4.1.4/perfmon/2.82
++#PAPI_PATH = /opt/cray/modulefiles/papi/4.1.4
++PAPI_PATH  =
++PAPI_INC   =
++KRP_DIR    = $(PROJECT_TOP)/libs/krp
++PAPI_LIB   = $(KRP_DIR)/krp-init.o $(KRP_DIR)/krp-rpt.o $(KRP_DIR)/krp-rpt-init.o -lpapi
++
++CPPFLAGS  += -DSILO -DUSE_PAPI
++
++# exclude libmesh and slepc for debugging purposes
++##CPPFLAGS += -DNOSLEPC -DNOLIBMESH
++##SLEPC_REAL_BUILD = 
++##SLEPC_REAL_INC = 
++##SLEPC_REAL_LIBDIR = 
++##SLEPC_CPLX_BUILD = 
++##SLEPC_CPLX_INC = 
++##SLEPC_CPLX_LIBDIR = 
++##LIBMESH_DIR        = 
++##LIBMESH_ARCH       = 
++##LIBMESH_TECIO_ARCH = 
++##LIBMESH_CONTRIBS   = 
++
++#Currently we need python compiled locally.
++PYTHON_ENABLE   = true
++PYTHON_DIR      = $(PROJECT_TOP)/libs/python
++PYTHON_LIB     = -Wl,-rpath,$(PYTHON_DIR)/build  -L$(PYTHON_DIR)/build -lpython2.7 -lutil
++PYTHON         = $(PYTHON_DIR)/build
++PYTHON_INCLUDE = -I$(PYTHON_DIR)/build/Include/ 
++
+diff -purN NEMO5/PATCHED NEMO5.new/PATCHED
+--- NEMO5/PATCHED	1969-12-31 19:00:00.000000000 -0500
++++ NEMO5.new/PATCHED	2013-08-14 14:15:55.000000000 -0400
+@@ -0,0 +1 @@
++yep

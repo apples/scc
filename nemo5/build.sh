@@ -10,22 +10,7 @@ function say {
 
 # Check for proper modules
 
-FAIL=1
-
-if [ "$PE_ENV" = "INTEL" ]; then
-	say "INTEL programming environment detected."
-	FAIL=0
-fi
-
-if [ "$PE_ENV" = "GNU" ]; then
-	say "GNU programming environment detected."
-	FAIL=0
-fi
-
-if [[ -z "$MPICH_DIR" ]]; then
-    say "'xt-mpich2' module not loaded!"
-    FAIL=1
-fi;
+FAIL=0
 
 if [[ -z "`which cmake`" ]]; then
     say "'cmake' module not loaded!"
@@ -34,11 +19,6 @@ fi;
 
 if [[ -z "`which python`" ]]; then
     say "'python' module not loaded!"
-    FAIL=1
-fi;
-
-if [[ -z "$PAPI_VERSION" ]]; then
-    say "'papi' module not loaded!"
     FAIL=1
 fi;
 
@@ -56,6 +36,7 @@ LOG_DIR="$MY_DIR/logs"
 BUILD_DIR="$MY_DIR/build.d"
 
 POSTPONE_LIBS="slepc"
+SKIP_LIBS=
 
 CFLAGS_EXTRA=""
 
@@ -63,15 +44,20 @@ MAKEFLAGS=""
 
 #Exported variables
 
-export CC=cc
-export CXX=CC
-export FC=ftn
-export MPICC=cc
-export MPICXX=CC
-export MPIFC=ftn
+export PATH="/data/scc/bin:/opt/intel/ics/bin:${PATH}"
 
-export CFLAGS="$CFLAGS $CFLAGS_EXTRA"
-export CXXFLAGS="$CXXFLAGS $CFLAGS_EXTRA"
+HARDFLAGS='-L/usr/lib64/mpich2/lib -I/usr/include/mpi -lmpich'
+
+export CC="icc ${HARDFLAGS}"
+export CXX="icpc ${HARDFLAGS} -lmpichcxx"
+export FC="ifort ${HARDFLAGS} -lmpichf90"
+export MPICC=mpiic
+export MPICXX=mpiicpc
+export MPIFC=mpiifort
+
+export I_MPI_CC=cc
+export I_MPI_CXX=CC
+export I_MPI_F90=ftn
 
 export VERBOSE=1
 
@@ -93,6 +79,16 @@ FAILED_BUILDS=()
     #~ wget -q -O - $WRF_ARW_DOWNLOAD_URL | tar -zx
     #~ patch -p0 < grib2.patch
 #~ fi
+
+#########
+# Patch #
+#########
+
+if [ ! -e "$NEMO5_DIR/PATCHED" ]
+then
+	say "Patching..."
+	patch -sp0 < yggy.patch
+fi
 
 #############
 # Configure #
@@ -118,7 +114,7 @@ function build_lib() {
 	then
 		"$BUILD_DIR/$CUR_DIR.sh"
 	else
-		MAKEFILE_NAME='Makefile.kraken'
+		MAKEFILE_NAME='Makefile.yggy'
 		if [ -e "$MAKEFILE_NAME" ]
 		then
 			say "Using special makefile \"$MAKEFILE_NAME\"."
@@ -149,18 +145,27 @@ function build_lib_and_log() {
 	fi
 }
 
+mkdir "${LOG_DIR}"
+
 cd "$NEMO5_LIB_DIR/"
 for CUR_DIR in *
 do
 	if [ -d "$NEMO5_LIB_DIR/$CUR_DIR" ]
 	then
-		POSTPONE_LIBS_STR="`echo ${POSTPONE_LIBS[@]}`"
-		case "$POSTPONE_LIBS_STR" in
+		case "$SKIP_LIBS" in
 		*"$CUR_DIR"*)
-			say "Deferring $CUR_DIR..."
+			say "Skipping $CUR_DIR..."
 			;;
 		*)
-			build_lib_and_log "$CUR_DIR"
+			POSTPONE_LIBS_STR="`echo ${POSTPONE_LIBS[@]}`"
+			case "$POSTPONE_LIBS" in
+			*"$CUR_DIR"*)
+				say "Deferring $CUR_DIR..."
+				;;
+			*)
+				build_lib_and_log "$CUR_DIR"
+				;;
+			esac
 			;;
 		esac
 	fi
