@@ -1,6 +1,6 @@
 diff -purN NEMO5/configure.sh NEMO5.new/configure.sh
 --- NEMO5/configure.sh	2013-03-19 11:40:11.000000000 -0400
-+++ NEMO5.new/configure.sh	2013-08-14 14:01:39.000000000 -0400
++++ NEMO5.new/configure.sh	2013-08-15 09:03:42.000000000 -0400
 @@ -1,99 +1,17 @@
  #!/bin/bash
  
@@ -112,7 +112,7 @@ diff -purN NEMO5/configure.sh NEMO5.new/configure.sh
 -fi
 diff -purN NEMO5/libs/MUMPS/src/Makefile NEMO5.new/libs/MUMPS/src/Makefile
 --- NEMO5/libs/MUMPS/src/Makefile	2013-03-19 11:37:14.000000000 -0400
-+++ NEMO5.new/libs/MUMPS/src/Makefile	2013-08-14 14:04:00.000000000 -0400
++++ NEMO5.new/libs/MUMPS/src/Makefile	2013-08-15 09:03:42.000000000 -0400
 @@ -6,6 +6,11 @@
  
  include ../../make.inc
@@ -127,7 +127,7 @@ diff -purN NEMO5/libs/MUMPS/src/Makefile NEMO5.new/libs/MUMPS/src/Makefile
  cmplx16:../lib/libzmumps$(PLAT).a
 diff -purN NEMO5/libs/PDIV/pdivcon.c NEMO5.new/libs/PDIV/pdivcon.c
 --- NEMO5/libs/PDIV/pdivcon.c	2013-03-19 11:37:16.000000000 -0400
-+++ NEMO5.new/libs/PDIV/pdivcon.c	2013-08-14 14:03:02.000000000 -0400
++++ NEMO5.new/libs/PDIV/pdivcon.c	2013-08-15 09:03:42.000000000 -0400
 @@ -9,7 +9,7 @@
  #include <malloc.h>
  
@@ -137,9 +137,155 @@ diff -purN NEMO5/libs/PDIV/pdivcon.c NEMO5.new/libs/PDIV/pdivcon.c
  
  ////////////////////////
  
+diff -purN NEMO5/make.inc.template NEMO5.new/make.inc.template
+--- NEMO5/make.inc.template	2013-03-19 11:40:11.000000000 -0400
++++ NEMO5.new/make.inc.template	2013-08-15 09:21:06.000000000 -0400
+@@ -38,130 +38,13 @@ YACC      = bison
+ 
+ USER = $(shell whoami)
+ 
++include $(PROJECT_TOP)/mkfiles/make.inc.$(BUILD_TYPE)
+ 
+-#<ss> -axP instead of -msse3; use mpich-intel-10.1.013
+-ifeq ($(BUILD_TYPE),nanohub)
+-include $(PROJECT_TOP)/mkfiles/make.inc.nanohub
+-endif
+-
+-
+-ifeq ($(BUILD_TYPE),steele-intel64-mpich2)
+-include $(PROJECT_TOP)/mkfiles/make.inc.steele-intel64-mpich2
+-endif
+-
+-ifeq ($(BUILD_TYPE),coates-intel64-mpich2)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-intel64-mpich2
+-endif
+-
+-ifeq ($(BUILD_TYPE),coates-intel64-mpich2-libs)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-intel64-mpich2-libs
+-endif
+-
+-
+-ifeq ($(BUILD_TYPE),coates-intel64-mvapich-petsc33)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-intel64-mvapich-petsc33
+-endif
+-
+-ifeq ($(BUILD_TYPE),coates-intel64-mvapich-petsc33-libs)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-intel64-mvapich-petsc33-libs
+-endif
+-
+-ifeq ($(BUILD_TYPE),coates-debug-libs)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-debug-libs
+-endif
+-
+-ifeq ($(BUILD_TYPE),carter)
+-include $(PROJECT_TOP)/mkfiles/make.inc.carter
+-endif
+-
+-ifeq ($(BUILD_TYPE),carter-impi-petsc33)
+-include $(PROJECT_TOP)/mkfiles/make.inc.carter-impi-petsc33
+-endif
+-
+-ifeq ($(BUILD_TYPE),carter-impi-petscdev)
+-include $(PROJECT_TOP)/mkfiles/make.inc.carter-impi-petscdev
+-endif
+-
+-ifeq ($(BUILD_TYPE),mac)
+-include $(PROJECT_TOP)/mkfiles/make.inc.mac
+-endif
+-
+-ifeq ($(BUILD_TYPE),carter-libs)
+-include $(PROJECT_TOP)/mkfiles/make.inc.carter-libs
+-endif
+-
+-
+-ifeq ($(BUILD_TYPE),carter-debug-libs)
+-include $(PROJECT_TOP)/mkfiles/make.inc.carter-debug-libs
+-endif
+-# for Ubuntu/Kubuntu make sure you do NOT install the packages qhull, petsc, slepc, tetgen!!!
+-# packages needed: libmpich2-dev, g++, gfortran, gcc, libboost1.40-dev, libboost-iostreams1.40-dev, 
+-# libboost-test1.40-dev libboost-filesystems1.40-dev, liblapack-dev, m4, xutils-dev
+-# cd NEMO/; ./configure.sh sebuntu; cd libs/; make; cd ../MaterialDB; make; cd ../prototype; make;
+-ifeq ($(BUILD_TYPE),sebuntu)
+-include $(PROJECT_TOP)/mkfiles/make.inc.sebuntu
+-endif
+-
+-
+-ifeq ($(BUILD_TYPE),static-ubuntu)
+-include $(PROJECT_TOP)/mkfiles/make.inc.static-ubuntu
+-endif
+-
+-ifeq ($(BUILD_TYPE),steele-gcc64-mpich2)
+-include $(PROJECT_TOP)/mkfiles/make.inc.steele-gcc64-mpich2
+-endif
+-
+-ifeq ($(BUILD_TYPE),coates-gcc64-mpich2)
+-include $(PROJECT_TOP)/mkfiles/make.inc.coates-gcc64-mpich2
+-endif
+-
+-
+-# must load {visit,fftw}, and module swap PrgEnv-pgi PrgEnv-gnu; also set XTPE_INFO_MESSAGE_OFF=1
+-ifeq ($(BUILD_TYPE),jaguar-gcc64)
+-include $(PROJECT_TOP)/mkfiles/make.inc.jaguar-gcc64
+-endif
+-
+-# for Ranger (TACC) load intel/10.1, mvapich2
+-ifeq ($(BUILD_TYPE),ranger-intel64)
+-include $(PROJECT_TOP)/mkfiles/make.inc.ranger-intel64
+-endif
+-
+-
+-# for Kraken (NICS) load etc. 
+-ifeq ($(BUILD_TYPE),kraken-gcc64)
+-include $(PROJECT_TOP)/mkfiles/make.inc.kraken-gcc64
+-endif
+-# for blueweaters (NICS) load etc. 
+-ifeq ($(BUILD_TYPE),bluewaters)
+-include $(PROJECT_TOP)/mkfiles/make.inc.bluewaters
+-endif
+-
+-#
+-# for blueweaters (NICS) load etc. 
+-ifeq ($(BUILD_TYPE),Tianhe-intel64-mpich2)
+-include $(PROJECT_TOP)/mkfiles/make.inc.make.inc.Tianhe-intel64-mpich2
+-endif
+ ###########################################################################
+ 
+ # Top 3rd-party library directory
+ # set special LIB_TOP for group builds
+ LIB_TOP       = $(PROJECT_TOP)/libs
+-ifeq ($(BUILD_TYPE),coates-intel64-mpich2-libs)
+-LIB_TOP = /apps/group/ncn/NEMO5/libs
+-endif
+-ifeq ($(BUILD_TYPE),coates-intel64-mpich2-libs-petsc33)
+-LIB_TOP = /apps/group/ncn/rossmann/petsc33/libs
+-endif
+-ifeq ($(BUILD_TYPE),carter-libs)
+-LIB_TOP = /apps/group/ncn/carter/libs
+-endif
+-ifeq ($(BUILD_TYPE),carter-debug-libs)
+-#LIB_TOP = /apps/group/ncn/carter/libs
+-LIB_TOP = /apps/group/ncn/carter_debug/libs
+-endif
+-ifeq ($(BUILD_TYPE),coates-debug-libs)
+-LIB_TOP = /apps/group/ncn/NEMO5_rossmann_debug/libs
+-endif
+ 
+ # Common include paths
+ INCAMD        = -I $(LIB_TOP)/AMD/Include/
+@@ -183,9 +66,6 @@ ifneq ($(LIBMESH_TECIO_ARCH),)
+ LIBMESH_LIBS += $(LIBMESH_DIR)/contrib/tecplot/lib/$(LIBMESH_TECIO_ARCH)/tecio.a
+ endif
+ 
+-
+-
+-
+ # Common link options
+ #ARPACK        = -Wl,-rpath,$(LIB_TOP)/ARPACK/ -L$(LIB_TOP)/ARPACK/ -larpack
+ #ARPACK        = -Wl,-rpath,$(LIB_TOP)/ARPACK/ -L$(LIB_TOP)/ARPACK/ -lparpack -larpack
+Binary files NEMO5/.make.inc.template.swp and NEMO5.new/.make.inc.template.swp differ
 diff -purN NEMO5/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 --- NEMO5/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/mkfiles/make.inc.yggy	2013-08-14 14:02:06.000000000 -0400
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-08-15 09:03:42.000000000 -0400
 @@ -0,0 +1,158 @@
 +# I'M GONNA WRECK IT AAAARGHASDLCXCDKASDOPKE
 +
@@ -301,6 +447,6 @@ diff -purN NEMO5/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +
 diff -purN NEMO5/PATCHED NEMO5.new/PATCHED
 --- NEMO5/PATCHED	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/PATCHED	2013-08-14 14:15:55.000000000 -0400
++++ NEMO5.new/PATCHED	2013-08-15 09:03:42.000000000 -0400
 @@ -0,0 +1 @@
 +yep
