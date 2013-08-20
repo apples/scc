@@ -1,2 +1,5 @@
 papi-devel
 mpich2-devel
+glibc-static
+libXt-devel
+boost-devel
