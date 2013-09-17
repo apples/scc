@@ -325,7 +325,7 @@ diff -purN NEMO5.base/make.inc.template NEMO5.new/make.inc.template
 Binary files NEMO5.base/.make.inc.template.swp and NEMO5.new/.make.inc.template.swp differ
 diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 --- NEMO5.base/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/mkfiles/make.inc.yggy	2013-08-20 18:29:45.000000000 -0400
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-09-17 16:16:45.000000000 -0400
 @@ -0,0 +1,160 @@
 +# I'M GONNA WRECK IT AAAARGHASDLCXCDKASDOPKE
 +
@@ -392,10 +392,10 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +
 +# check out silo's config.log for which hdf5 and sz to use
 +
-+#HDF5_DIR      = $/opt/cray/hdf5/1.8.6/gnu/46
-+#HDF5_INCDIR   = $(HDF5_DIR)/include/
-+#HDF5_LIBDIR   = $(HDF5_DIR)/lib
-+#SZ_LIBDIR     = $(HDF5_DIR)/lib
++HDF5_DIR      = /usr
++HDF5_INCDIR   = $(HDF5_DIR)/include/
++HDF5_LIBDIR   = $(HDF5_DIR)/lib64
++SZ_LIBDIR     = $(HDF5_DIR)/lib64
 +
 +#PETSCDEV=-dev
 +PETSCDEV=
@@ -433,7 +433,7 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +#PETSC_EXT_LIBS_REAL   = -lsuperlu_dist -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
 +
 +
-+PETSC_BLAS_LAPACK_DIR = --with-mpiexec=aprun
++PETSC_BLAS_LAPACK_DIR = --with-mpiexec=mpiexec --with-lapack-lib=/usr/lib64/liblapack.a --with-blas-lib=/usr/lib64/libopenblas.a
 +PETSC_REAL_BUILD = $(PROJECT_TOP)/libs/petsc$(PETSCDEV)/build-real
 +SLEPC_REAL_BUILD = $(PROJECT_TOP)/libs/slepc$(PETSCDEV)/build-real
 +PETSC_REAL_INC = -I $(PETSC_REAL_BUILD)/include -I $(PETSC_REAL_BUILD)/$(PETSC_REAL_ARCH)/include

@@ -36,7 +36,7 @@ LOG_DIR="${MY_DIR}/logs"
 BUILD_DIR="${MY_DIR}/build.d"
 
 POSTPONE_LIBS="slepc"
-SKIP_LIBS="statgrab UFconfig wxWidgets"
+SKIP_LIBS="boost statgrab UFconfig wxWidgets"
 
 CFLAGS_EXTRA=""
 

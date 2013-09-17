@@ -3,3 +3,6 @@ mpich2-devel
 glibc-static
 libXt-devel
 boost-devel
+imake
+lapack-devel
+openblas-static
