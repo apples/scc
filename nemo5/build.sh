@@ -35,8 +35,8 @@ NEMO5_DIR="${MY_DIR}/NEMO5"
 LOG_DIR="${MY_DIR}/logs"
 BUILD_DIR="${MY_DIR}/build.d"
 
-POSTPONE_LIBS="slepc"
-SKIP_LIBS="boost statgrab UFconfig wxWidgets"
+POSTPONE_LIBS=("libmesh" "slepc")
+SKIP_LIBS="statgrab UFconfig wxWidgets"
 
 CFLAGS_EXTRA=""
 
@@ -46,9 +46,11 @@ MAKEFLAGS=""
 
 source setbuildenv.sh
 
-export VERBOSE=1
+#TODO: VERBOSE conflicts with SuperLu build in petsc.
+#export VERBOSE=1
 
 export NEMO5_LIB_DIR="${NEMO5_DIR}/libs"
+export libmesh_LDFLAGS="-fPIC"
 
 #Internal
 
@@ -145,7 +147,7 @@ do
 			;;
 		*)
 			POSTPONE_LIBS_STR="`echo ${POSTPONE_LIBS[@]}`"
-			case "${POSTPONE_LIBS}" in
+			case "${POSTPONE_LIBS_STR}" in
 			*"${CUR_DIR}"*)
 				say "Deferring ${CUR_DIR}..."
 				;;

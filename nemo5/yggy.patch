@@ -325,7 +325,7 @@ diff -purN NEMO5.base/make.inc.template NEMO5.new/make.inc.template
 Binary files NEMO5.base/.make.inc.template.swp and NEMO5.new/.make.inc.template.swp differ
 diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 --- NEMO5.base/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/mkfiles/make.inc.yggy	2013-09-17 16:16:45.000000000 -0400
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-10-01 03:25:56.000000000 -0400
 @@ -0,0 +1,160 @@
 +# I'M GONNA WRECK IT AAAARGHASDLCXCDKASDOPKE
 +
@@ -352,7 +352,7 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +CPPFLAGS      = $(O_LEVEL) -DMPICH_IGNORE_CXX_SEEK -DNO_MKL
 +CFLAGS        = $(O_LEVEL) -Wall -fPIC
 +CXXFLAGS      = $(O_LEVEL) -Wall -fPIC
-+LDFLAGS       =
++LDFLAGS       = -fPIC
 +FCFLAGS       = $(O_LEVEL) -Wall -fPIC
 +GCCFLAGS      = $(O_LEVEL) $(PICFLAG)
 +F77FLAGS      = $(O_LEVEL) -Wall -fPIC
@@ -372,7 +372,7 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +#BOOST_INCLUDE = -I/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/include
 +#LINK_BOOST    = -Wl,-rpath,/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib -L/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib
 +
-+BOOST_DIR     = $(PROJECT_TOP/libs/boost
++BOOST_DIR     = $(PROJECT_TOP)/libs/boost
 +BOOST_INCLUDE = -I$(BOOST_DIR)/include
 +LINK_BOOST    = -Wl,-rpath,$(BOOST_DIR)/lib
 +

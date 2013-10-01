@@ -6,3 +6,4 @@ boost-devel
 imake
 lapack-devel
 openblas-static
+boost-static
