@@ -8,3 +8,5 @@ lapack-devel
 openblas-static
 boost-static
 zlib-static
+glibc-static
+glibc-static.i686

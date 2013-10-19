@@ -50,7 +50,12 @@ source setbuildenv.sh
 #export VERBOSE=1
 
 export NEMO5_LIB_DIR="${NEMO5_DIR}/libs"
-export libmesh_LDFLAGS="-fPIC"
+
+export libmesh_CFLAGS="-fPIC -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX"
+export libmesh_CXXFLAGS="-fPIC -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX"
+export libmesh_CPPFLAGS="-fPIC -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX"
+
+export PICFLAG="-fPIC"
 
 #Internal
 
@@ -97,6 +102,8 @@ fi
 # Build libs #
 ##############
 
+mkdir "${LOG_DIR}"
+
 function build_lib() {
 	cd "${NEMO5_LIB_DIR}/${CUR_DIR}"
 	if [ -e "${BUILD_DIR}/${CUR_DIR}.sh" ]
@@ -134,8 +141,6 @@ function build_lib_and_log() {
 	fi
 }
 
-mkdir "${LOG_DIR}"
-
 cd "${NEMO5_LIB_DIR}/"
 for CUR_DIR in *
 do
@@ -164,6 +169,17 @@ for CUR_DIR in "${POSTPONE_LIBS[@]}"
 do
 	build_lib_and_log "${CUR_DIR}"
 done
+
+cd "${NEMO5_DIR}/prototype"
+mkdir bin
+make static >"${LOG_DIR}/NEMO5.build.log" 2>&1
+if [ ${?} == 0 ]
+then
+	say "NEMO5 BUILD SUCCESSFUL!"
+else
+	FAILED_BUILDS+=("NEMO5")
+	say "NEMO5 build failed..."
+fi
 
 say "Build logs written to \"${LOG_DIR}\"."
 say "Failed builds:" ${FAILED_BUILDS[@]}

@@ -144,6 +144,33 @@ diff -purN NEMO5.base/libs/krp/Makefile NEMO5.new/libs/krp/Makefile
  
  clean:
  	rm *.o
+diff -purN NEMO5.base/libs/libmesh/Makefile NEMO5.new/libs/libmesh/Makefile
+--- NEMO5.base/libs/libmesh/Makefile	2013-03-19 11:36:50.000000000 -0400
++++ NEMO5.new/libs/libmesh/Makefile	2013-10-19 03:03:41.000000000 -0400
+@@ -22,8 +22,8 @@ static: libmesh/configure
+ 	@echo "# Configuring Libmesh (STATIC libraries)  #"
+ 	@echo "#                                         #"
+ 	@echo "###########################################"
+-	(export libmesh_CXXFLAGS=$(libmesh_CXXFLAGS); \
+-	export libmesh_INCLUDE=$(libmesh_INCLUDE); \
++	(export libmesh_CXXFLAGS="$(libmesh_CXXFLAGS)"; \
++	export libmesh_INCLUDE="$(libmesh_INCLUDE)"; \
+ 	export SLEPC_DIR=$(SLEPC_DIR); \
+ 	cd libmesh; ./configure PETSC_DIR=$(PETSC_REAL_BUILD) MPIHOME=$(MPIHOME) PETSC_ARCH=$(PETSC_REAL_ARCH) \
+ F77="$(MPIF77)" CC="$(MPICC)" GCC="$(GCC)" CXX="$(MPICXX)"  --enable-vtk --with-vtk-include=$(VTKINC_PATH) \
+@@ -38,9 +38,9 @@ dynamic: libmesh/configure
+ 	@echo "# Configuring Libmesh (DYNAMIC libraries) #"
+ 	@echo "#                                         #"
+ 	@echo "###########################################"
+-	(export libmesh_CXXFLAGS=$(libmesh_CXXFLAGS); \
+-	export libmesh_CPPFLAGS=$(libmesh_CPPFLAGS); \
+-	export libmesh_INCLUDE=$(libmesh_INCLUDE); \
++	(export libmesh_CXXFLAGS="$(libmesh_CXXFLAGS)"; \
++	export libmesh_CPPFLAGS="$(libmesh_CPPFLAGS)"; \
++	export libmesh_INCLUDE="$(libmesh_INCLUDE)"; \
+ 	export SLEPC_DIR=$(SLEPC_DIR); \
+ 	cd libmesh; ./configure PETSC_DIR=$(PETSC_REAL_BUILD) MPIHOME=$(MPIHOME) PETSC_ARCH=$(PETSC_REAL_ARCH) \
+ F77="$(MPIF77)" CC="$(MPICC)" GCC="$(GCC)" CXX="$(MPICXX)" --enable-vtk  --with-vtk-include=$(VTKINC_PATH) \
 diff -purN NEMO5.base/libs/MUMPS/src/Makefile NEMO5.new/libs/MUMPS/src/Makefile
 --- NEMO5.base/libs/MUMPS/src/Makefile	2013-03-19 11:37:14.000000000 -0400
 +++ NEMO5.new/libs/MUMPS/src/Makefile	2013-08-15 09:03:42.000000000 -0400
@@ -325,9 +352,9 @@ diff -purN NEMO5.base/make.inc.template NEMO5.new/make.inc.template
 Binary files NEMO5.base/.make.inc.template.swp and NEMO5.new/.make.inc.template.swp differ
 diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 --- NEMO5.base/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/mkfiles/make.inc.yggy	2013-10-01 03:25:56.000000000 -0400
-@@ -0,0 +1,160 @@
-+# I'M GONNA WRECK IT AAAARGHASDLCXCDKASDOPKE
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-10-19 03:05:15.000000000 -0400
+@@ -0,0 +1,155 @@
++# I'M GONNA WRECK IT
 +
 +MPIHOME       = /opt/intel/impi/4.1.0.024/intel64
 +INCMPI        = -I$(MPIHOME)/include/ -L$(MPIHOME)/lib/
@@ -347,15 +374,16 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +LOADER        = $(MPICXX)
 +
 +# Compiler flags
++PICFLAG       = -fPIC
 +#O_LEVEL       = -O2 -fastsse -tp=barcelona-64 -pc=64
 +O_LEVEL       = -O3
 +CPPFLAGS      = $(O_LEVEL) -DMPICH_IGNORE_CXX_SEEK -DNO_MKL
-+CFLAGS        = $(O_LEVEL) -Wall -fPIC
-+CXXFLAGS      = $(O_LEVEL) -Wall -fPIC
-+LDFLAGS       = -fPIC
-+FCFLAGS       = $(O_LEVEL) -Wall -fPIC
++CFLAGS        = $(O_LEVEL) -Wall $(PICFLAG)
++CXXFLAGS      = $(O_LEVEL) -Wall $(PICFLAG)
++LDFLAGS       = $(PICFLAG)
++FCFLAGS       = $(O_LEVEL) -Wall $(PICFLAG)
 +GCCFLAGS      = $(O_LEVEL) $(PICFLAG)
-+F77FLAGS      = $(O_LEVEL) -Wall -fPIC
++F77FLAGS      = $(O_LEVEL) -Wall $(PICFLAG)
 +F90_LIBS      = -lgfortran
 +
 +MPI_LIBS      = -lmpi -lmpich
@@ -378,8 +406,8 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +
 +LINKBOOSTTEST = $(LINK_BOOST) -lboost_unit_test_framework
 +MPIEXECTEST   = 
-+VTKINC_PATH = $(PROJECT_TOP)/libs/vtk/include/vtk-5.6
-+VTKLIB_PATH = $(PROJECT_TOP)/libs/vtk/lib/vtk-5.6
++VTKINC_PATH = $(PROJECT_TOP)/libs/vtk/include/vtk-5.10
++VTKLIB_PATH = $(PROJECT_TOP)/libs/vtk/lib/vtk-5.10
 +
 +INCVTK     = -I $(VTKINC_PATH)
 +
@@ -412,20 +440,14 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +PETSC_CPLX_ARCH = linux-complex
 +SLEPC_REAL_ARCH = linux
 +SLEPC_CPLX_ARCH = linux-complex
-+ifeq ($(PETSCDEV),)
-+	PETSC_LIBS            = -lpetscts -lpetscksp -lpetscdm -lpetscmat -lpetscvec -lpetscsnes -lpetscsys
-+	PETSC_EXT_LIBS_CPLX   = -lsuperlu -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
-+	PETSC_EXT_LIBS_REAL   = -lsuperlu -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
-+else
-+ifeq ($(PETSCDEV),-p8)
-+	PETSC_LIBS            = -lpetscts -lpetscksp -lpetscdm -lpetscmat -lpetscvec -lpetscsnes -lpetscsys
-+	PETSC_EXT_LIBS_CPLX   = -lsuperlu -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
-+	PETSC_EXT_LIBS_REAL   = -lsuperlu -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
-+else
++ifeq ($(PETSCDEV),-dev)
 +	PETSC_LIBS            = -lpetsc
 +	PETSC_EXT_LIBS_CPLX   = -lsuperlu -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
 +	PETSC_EXT_LIBS_REAL   = -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
-+endif
++else
++	PETSC_LIBS            = -lpetscts -lpetscksp -lpetscdm -lpetscmat -lpetscvec -lpetscsnes -lpetscsys
++	PETSC_EXT_LIBS_CPLX   = -lsuperlu_dist_2.5 -lzmumps -ldmumps -lmumps_common -lscalapack -lblacs -lpord -lparmetis -lmetis
++	PETSC_EXT_LIBS_REAL   = $(PETSC_EXT_LIBS_CPLX)
 +endif
 +#from coates config file
 +#PETSC_LIBS            = -lpetsc -lhdf5
