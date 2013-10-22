@@ -352,7 +352,7 @@ diff -purN NEMO5.base/make.inc.template NEMO5.new/make.inc.template
 Binary files NEMO5.base/.make.inc.template.swp and NEMO5.new/.make.inc.template.swp differ
 diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 --- NEMO5.base/mkfiles/make.inc.yggy	1969-12-31 19:00:00.000000000 -0500
-+++ NEMO5.new/mkfiles/make.inc.yggy	2013-10-19 03:05:15.000000000 -0400
++++ NEMO5.new/mkfiles/make.inc.yggy	2013-10-22 13:41:59.000000000 -0400
 @@ -0,0 +1,155 @@
 +# I'M GONNA WRECK IT
 +
@@ -360,16 +360,16 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +INCMPI        = -I$(MPIHOME)/include/ -L$(MPIHOME)/lib/
 +
 +# Compilers
-+CC            = icc
-+CXX           = icpc
-+CXX_STATIC    = icpc
++CC            = mpiicc
++CXX           = mpiicpc
++CXX_STATIC    = mpiicpc
 +CPP           = cpp
 +MPICC         = mpiicc
 +MPICXX        = mpiicpc
 +GCC           = gcc
 +F90           = ifort
 +MPIF90        = mpiifort
-+F77           = ifort
++F77           = mpiifort
 +MPIF77        = mpiifort
 +LOADER        = $(MPICXX)
 +
@@ -387,9 +387,9 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +F90_LIBS      = -lgfortran
 +
 +MPI_LIBS      = -lmpi -lmpich
-+BLAS          = -lacml -L/usr/lib64/libpthread.a
++BLAS          = -lacml -pthread
 +LAPACK        =
-+LINKS         = -L/usr/X11R6/lib64 -lX11 -lXext -lXdmcp -lXau -lz -ldl -pthread
++LINKS         = -pthread -ldl -lz #-L/usr/X11R6/lib64 -lX11 -lXext -lXdmcp -lXau -lz -ldl -pthread
 +
 +OPENMP	      = -fopenmp
 +#LIBSCI        = -L/opt/xt-libsci/10.5.02/gnu/lib -lsci
@@ -401,8 +401,8 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +#LINK_BOOST    = -Wl,-rpath,/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib -L/sw/xt/boost/1.44.0/cnl2.2_gnu4.5.2/lib
 +
 +BOOST_DIR     = $(PROJECT_TOP)/libs/boost
-+BOOST_INCLUDE = -I$(BOOST_DIR)/include
-+LINK_BOOST    = -Wl,-rpath,$(BOOST_DIR)/lib
++BOOST_INCLUDE = -I$(BOOST_DIR)/boost_1_43_0
++LINK_BOOST    = -Wl,-rpath,$(BOOST_DIR)/boost_1_43_0/stage/lib
 +
 +LINKBOOSTTEST = $(LINK_BOOST) -lboost_unit_test_framework
 +MPIEXECTEST   = 
@@ -483,7 +483,7 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +PAPI_PATH  =
 +PAPI_INC   =
 +KRP_DIR    = $(PROJECT_TOP)/libs/krp
-+PAPI_LIB   = $(KRP_DIR)/krp-init.o $(KRP_DIR)/krp-rpt.o $(KRP_DIR)/krp-rpt-init.o -lpapi
++PAPI_LIB   = $(KRP_DIR)/krp-init.o $(KRP_DIR)/krp-rpt.o $(KRP_DIR)/krp-rpt-init.o -L$(PROJECT_TOP)/libs/papi/lib -lpapi
 +
 +CPPFLAGS  += -DSILO -DUSE_PAPI
 +
@@ -503,7 +503,7 @@ diff -purN NEMO5.base/mkfiles/make.inc.yggy NEMO5.new/mkfiles/make.inc.yggy
 +#Currently we need python compiled locally.
 +PYTHON_ENABLE   = true
 +PYTHON_DIR      = $(PROJECT_TOP)/libs/python
-+PYTHON_LIB     = -Wl,-rpath,$(PYTHON_DIR)/build  -L$(PYTHON_DIR)/build -lpython2.7 -lutil
++PYTHON_LIB     = -Wl,-rpath,$(PYTHON_DIR)/build  -L$(PYTHON_DIR)/build -lpython2.6 -lutil
 +PYTHON         = $(PYTHON_DIR)/build
 +PYTHON_INCLUDE = -I$(PYTHON_DIR)/build/Include/ 
 +
@@ -514,3 +514,24 @@ diff -purN NEMO5.base/PATCHED NEMO5.new/PATCHED
 +++ NEMO5.new/PATCHED	2013-08-15 09:03:42.000000000 -0400
 @@ -0,0 +1 @@
 +yep
+diff -purN NEMO5.base/prototype/make.common.template NEMO5.new/prototype/make.common.template
+--- NEMO5.base/prototype/make.common.template	2013-03-19 11:40:11.000000000 -0400
++++ NEMO5.new/prototype/make.common.template	2013-10-22 14:33:32.000000000 -0400
+@@ -49,6 +49,8 @@ shared_libext := so
+ 
+ INCLUDES := 
+ 
++INCLUDES += -I$(LIB_TOP)/x11/include
++
+ # NEMO directory includes
+ include_dirs := $(shell find $(topdir)/include -type d -a ! -path "*.svn*")
+ NEMO_INCLUDES := $(foreach dir,$(include_dirs),-I$(dir))
+@@ -117,6 +119,8 @@ INCLUDES += $(PAPI_INC)
+ # note: order matters for static linking!
+ # --------------------------------------------
+ 
++LIBS += -L$(LIB_TOP)/x11/lib
++
+ # Petsc and Slepc
+ LIBS += -Wl,-rpath,$(nemo_home)/lib  -L$(nemo_home)/lib  -lnemo_petsc_double -lnemo_petsc_complex
+ 

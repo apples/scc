@@ -36,7 +36,7 @@ LOG_DIR="${MY_DIR}/logs"
 BUILD_DIR="${MY_DIR}/build.d"
 
 POSTPONE_LIBS=("libmesh" "slepc")
-SKIP_LIBS="statgrab UFconfig wxWidgets"
+SKIP_LIBS="statgrab UFconfig wxWidgets ${SKIP_LIBS} papi x11"
 
 CFLAGS_EXTRA=""
 
@@ -74,6 +74,7 @@ FAILED_BUILDS=()
     #~ patch -p0 < grib2.patch
 #~ fi
 
+
 #########
 # Patch #
 #########
@@ -103,6 +104,9 @@ fi
 ##############
 
 mkdir "${LOG_DIR}"
+
+if [ -z "${SKIP_ALL}" ]
+then
 
 function build_lib() {
 	cd "${NEMO5_LIB_DIR}/${CUR_DIR}"
@@ -169,6 +173,23 @@ for CUR_DIR in "${POSTPONE_LIBS[@]}"
 do
 	build_lib_and_log "${CUR_DIR}"
 done
+
+say "Building PAPI..."
+
+PAPI_VERSION="5.2.0"
+PAPI_DIR="${NEMO5_DIR}/libs/papi"
+
+mkdir "${PAPI_DIR}"
+
+cd "${MY_DIR}"
+wget "http://icl.cs.utk.edu/projects/papi/downloads/papi-${PAPI_VERSION}.tar.gz"
+tar zxf "papi-${PAPI_VERSION}.tar.gx"
+cd "papi-${PAPI_VERSION}/src"
+./configure --prefix="${PAPI_DIR}" --with-static-lib=yes
+make
+make install
+
+fi
 
 cd "${NEMO5_DIR}/prototype"
 mkdir bin

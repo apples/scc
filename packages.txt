@@ -10,3 +10,8 @@ boost-static
 zlib-static
 glibc-static
 glibc-static.i686
+bzip2-devel
+python-devel
+xorg-x11-utils
+xorg-x11-util-macros
+xorg-x11-xtrans-devel
