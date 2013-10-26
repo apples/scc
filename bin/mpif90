@@ -1,6 +1,0 @@
-#!/bin/bash
-[ -z "$MPIFC" ] && MPIFC=mpiifort
-MPIFC=$(echo "${MPIFC}" | sed -r 's|^(/data/scc/bin/)?mpif90\s*|mpiifort |')
-echo "[mpif90] Chaining ${MPIFC}"
-${MPIFC} $@
-

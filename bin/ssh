@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export SSH_COMMAND=ssh
+/data/mic/bin/.basic-ssh "$@"
+

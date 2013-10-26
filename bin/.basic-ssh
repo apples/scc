@@ -1,0 +1,26 @@
+#!/bin/sh
+
+KEYFILE="/opt/intel/mic/filesystem/common/home/scc/.ssh/micssh-id_rsa"
+
+case "$(whoami)" in
+macslayer)
+    ;;
+scc)
+    ;;
+root)
+    echo "Warning: You're root! Be careful." >&2
+    ;;
+*)
+    echo "You are not the chose one." >&2
+    exit 1
+    ;;
+esac
+
+if [ ! -r "$KEYFILE" ]
+then
+    echo "Keyfile \"$KEYFILE\" does not exist." >&2
+    exit 1
+fi
+
+"$SSH_COMMAND" -i "$KEYFILE" "$@"
+
