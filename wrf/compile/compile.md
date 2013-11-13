@@ -55,3 +55,23 @@ executable is there. If it is, then you have successfully compiled WRF for nativ
 Once you have it successfully compiled, move on to the `run.md` readme in order to learn how to run
 WRF across either all or some of the MICs.  Compiling WRF for the MICs is needed if you want to run
 WRF in symmetric mode (across the host and MICs) or native mode (across one or all MICs).
+
+##2.3 Editing the Configure Script
+**Note: This section is only needed if you need to build WRF on a system other than Beacon or Smokey.
+Ignore if you are not on either of these systems.  It merely describes how I changed the configure.wrf
+file that WRF gives you by default.**
+
+The `configure.wrf` file needed quite a bit of tweaking in order to get it working for the MICs (despite
+WRF having a build system made for the MICs), and needed some more changes to get MKL to work in WRF.
+
+###Fixing the Bugs
+First, make the changes as they are listed on the [Intel website](http://software.intel.com/en-us/articles/how-to-get-wrf-running-on-the-intelr-xeon-phitm-coprocessor).  Namely, refer to section III, steps 5 and 6.
+
+###Enabling MKL
+Next, you need to make the appropriate changes to enable the MKL.  Refer heavily to any of my provided
+`configure.wrf` files, and copy/paste the following *exactly* onto the appropriate lines.
+1. Add this line to the `FC` line:
+``
+alsdfkjlkj
+``
+dlkfjalsdkfj
