@@ -1,7 +1,6 @@
 #Compiling WRF for the Host
 
 ##Quick Steps
-
 1. Go into the WRFV3 directory. 
 2. Copy the file beninstallforhost.sh into that directory.
 3. Next, make a new directory called custom_configure and put configure_host.wrf into it.
@@ -10,5 +9,4 @@
 6. Run that script.
 
 ##Explanation
-
 
