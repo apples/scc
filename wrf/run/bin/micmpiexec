@@ -1,0 +1,17 @@
+#!/bin/sh
+##########################
+## This file is controlled by puppet!
+## Any manual changes will be overwritten.
+## Only make changes on the puppetmaster at:
+## PEAR:/etc/puppet/modules/beacon/files/usr/local/bin/micmpiexec
+##########################
+if [ -n "$PBS_JOBID" -a -n "$TMPDIR" ]
+then
+    if [ -r $TMPDIR/.micssh/micssh-id_rsa ]
+    then
+        MPI_ARGS="-bootstrap ssh -bootstrap-exec micssh -genv LD_LIBRARY_PATH $TMPDIR/lib:/global/opt/intel/composerxe/lib/mic:/global/opt/intel/impi/latest/mic/lib:/global/opt/intel/mkl/lib/mic:$LD_LIBRARY_PATH"
+    fi
+fi
+export MPI_ARGS
+export EXEC=""
+$EXEC /opt/intel/impi/4.1.0.024/bin64/mpiexec.hydra $MPI_ARGS $*

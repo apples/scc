@@ -1,0 +1,120 @@
+#!/bin/sh
+# Intel(R) Application Debugger for Linux
+# Copyright (C) 2000-2012 Intel Corporation. All rights reserved.
+if [ -z "$PBS_JOBID" ]
+then
+  echo Debugger cannot be launched from the login node
+  exit -1
+fi
+
+if [ -z "$*" ]
+then
+  echo No arguments were provided
+  echo "Usage: micidbc -wdir <working_directory> -tco -rconnect=tcpip:<hostname>-mic#:2000"
+  echo "i.e.   micidbc -wdir \$TMPDIR -tco -rconnect=tcpip:beacon005-mic0:2000"
+  exit -1
+fi
+
+INSTALLDIR=/global/opt/intel/composerxe
+
+if [ -z "${INTEL_LICENSE_FILE}" ]
+then
+    INTEL_LICENSE_FILE="$INSTALLDIR/licenses:/global/opt/intel/licenses:/opt/intel/licenses:${HOME}/intel/licenses:/Users/Shared/Library/Application Support/Intel/Licenses"; export INTEL_LICENSE_FILE
+else
+    INTEL_LICENSE_FILE="${INTEL_LICENSE_FILE}:$INSTALLDIR/licenses:/global/opt/intel/licenses:/opt/intel/licenses:${HOME}/intel/licenses:/Users/Shared/Library/Application Support/Intel/Licenses"; export INTEL_LICENSE_FILE
+fi
+
+export LD_LIBRARY_PATH="$INSTALLDIR/bin/intel64_mic:$INSTALLDIR/debugger/mic/lib/:$INSTALLDIR/debugger/mic/gui/":$LD_LIBRARY_PATH
+export PATH="$INSTALLDIR/bin/intel64_mic:$INSTALLDIR/debugger/mic/gui":$PATH
+export IDB_GUI_DEBUGGER="$INSTALLDIR/bin/intel64_mic/iidb_mic"
+
+export IDB_MIC_SLAVE_DEBUGGER="$INSTALLDIR/bin/intel64_mic/idbc_mic"
+IDB_ARGUMENTS="$@"
+#Check to see if a working directory is specified
+
+#Store all arguments in an array
+ARG_ARRAY=(${@})
+#Get the number of arguments
+N_ARGS=${#ARG_ARRAY[@]}
+#Loop over the arguments
+for ((i=0; i<${N_ARGS}; i++)); do
+  #Look for working directory argument
+  if [ "${ARG_ARRAY[${i}]}" = "-wdir" ]
+  then
+    WORKINGDIR="${ARG_ARRAY[${i}+1]}"
+    #Skip over the next argument since it should be the specified working directory
+    i=${i}+1
+  else
+  #Build up the list of arguments to be passed; idb does not know what -wdir does so it should not be passed
+    ARGS_TO_PASS=$ARGS_TO_PASS" "${ARG_ARRAY[${i}]}
+  fi
+done
+
+#If a working directory is not specified, use the default of $TMPDIR
+if [ -z $WORKINGDIR ]
+then
+  WORKINGDIR=$TMPDIR
+fi
+
+MPM_LAUNCH=`echo " ${IDB_ARGUMENTS}" | grep " \+\(-mpm-launch=1\) \+"`
+
+if [ "${MPM_LAUNCH}" ]; then
+  mpm_launch_parm="$1"
+  shift
+  mpm_cardid_parm="$1"
+  shift
+
+  mpm_cardid_regex="-mpm-cardid=([0-9]+)"
+  if [[ $mpm_cardid_parm =~ $mpm_cardid_regex ]]; then
+    mpm_cardid=${BASH_REMATCH[1]}
+  fi
+
+  #find sysfs mountpoint
+  #sysfs=`mount | sed -ne 's/.* on \(.*\) type sysfs.*/\1/p'`
+  sysfs=/sys
+  if [ -d "$sysfs/class/mic" ]; then
+    rconnect_regex="-rconnect=tcpip:([^:]+):([0-9]+)"
+    card_regex='^.*mic([0-9]+)$'
+    #Arguments in $* have been modified, use values stored in $IDB_ARGUMENTS
+    for arg in $IDB_ARGUMENTS
+    do
+      if [[ $arg =~ $rconnect_regex ]]; then
+        rconnect_ip=${BASH_REMATCH[1]}
+        rconnect_port=${BASH_REMATCH[2]}
+        card_dir=$sysfs/class/mic/mic$mpm_cardid
+        card_status=`cat $card_dir/scif_status`
+        if [ $card_status == "online" ]; then
+          if [ -z "${SINK_LD_LIBRARY_PATH}" ]; then
+            SINK_LD_LIBRARY_PATH="/usr/linux-k1om-4.7/linux-k1om/lib64:/opt/intel/mic/myo/lib"; export SINK_LD_LIBRARY_PATH
+          else
+            SINK_LD_LIBRARY_PATH="${SINK_LD_LIBRARY_PATH}:/usr/linux-k1om-4.7/linux-k1om/lib64:/opt/intel/mic/myo/lib"; export SINK_LD_LIBRARY_PATH
+          fi
+          /opt/intel/mic/coi/tools/micnativeloadex/release/micnativeloadex $INSTALLDIR/debugger/mic/lib/idbserver_mic -d $mpm_cardid -a "-c tcpip:$rconnect_port -x"&
+        fi
+        break
+      fi
+    done
+  fi
+else
+  #find sysfs mountpoint
+  #sysfs=`mount | sed -ne 's/.* on \(.*\) type sysfs.*/\1/p'`
+  sysfs=/sys
+  if [ -d "$sysfs/class/mic" ]; then
+    rconnect_regex="-rconnect=tcpip:([^:]+):([0-9]+)"
+    card_regex='^.*mic([0-9]+)$'
+    #Arguments in $* have been modified, use values stored in $IDB_ARGUMENTS
+    for arg in $IDB_ARGUMENTS
+    do
+      if [[ $arg =~ $rconnect_regex ]]; then
+        rconnect_ip=${BASH_REMATCH[1]}
+        rconnect_port=${BASH_REMATCH[2]}
+        allmicput -x $INSTALLDIR/debugger/mic/lib/idbserver_mic
+        allmicput -l /opt/intel/mic/myo/lib/libmyodbl-service.so
+        #Must change to working directory before starting the idb server on the MIC
+        micssh $rconnect_ip "cd $WORKINGDIR; source /etc/profile; echo "Connected to \$\(hostname\)"; pwd; $TMPDIR/bin/idbserver_mic -c tcpip:$rconnect_port -x"&
+      fi
+    done
+  fi
+fi
+${IDB_GUI_DEBUGGER} ${ARGS_TO_PASS}
+kill -s 15 `jobs -p` 2> /dev/null

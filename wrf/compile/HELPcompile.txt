@@ -1,0 +1,13 @@
+These are the steps to compile WRF. I will try to be as explicit as possible.
+1. Copy the "beninstallfor*.sh" script to the "WRFV3" directory.
+2. Copy the "configure_*.wrf" to a folder called "custom_configure" in the "WRFV3" directory.
+3. Now that you have those two files in place, you can run the compilation script.
+4. Choose the option that is most appropriate. The option for just the host (should be option 25) reads:
+       "Linux x86_64 i486 i586 i686, Xeon (SNB with AVX mods) ifort compiler with icc  (dm+sm)"
+   is the one that you should choose if trying to compile for the host (dm+sm means OpenMP + MPI).
+   If you're compiling for the Xeon Phi, use this one, which should be option 21:
+       "Linux x86_64 i486 i586 i686, Xeon Phi (MIC architecture) ifort compiler with icc  (dm+sm)"
+5. Just choose the default option for nesting.  This is an extremely niche option that we will not use.
+6. WRF will now start compiling.  If anything goes wrong, it's most likely the case that paths have changed,
+   in which case you should change the paths in "beninstallfor*.sh".
+7. Once that's done, move on to the "HELP.txt" for running WRF.
