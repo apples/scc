@@ -27,9 +27,9 @@ If you look into the `main` directory, you should see `wrf.exe`.  If you do see 
 successful. Congratulations!
 
 If it was not successful, then you won't see a `wrf.exe`.  Once you have it successfully compiled,
-move on to `run.md` to learn how to run WRF across the host only or in simultaneous mode across the 
+move on to `run.md` to learn how to run WRF across the host only or in symmetric mode across the 
 host and the MICs.  Compiling WRF for the host is required to run in normal mode (host only) or 
-simultaneous mode (across the host and the MICs).
+symmetric mode (across the host and the MICs).
 
 #2.0 Compiling WRF for the MICs
 
@@ -46,7 +46,7 @@ simultaneous mode (across the host and the MICs).
 
 ##2.2 Explanation
 The `beinstallformic.sh` script compiles WRF for the MICs, and should be used to run WRF across
-one or all of the MICs simultaneously.  It does the same things as the file `beninstallforhost.sh`,
+one or all of the MICs symmetric.  It does the same things as the file `beninstallforhost.sh`,
 except the configure.wrf is a little different and it uses different compiler flags (such as `-mmic`).
 
 As in the above-described explanation, check the `main` directory to make sure that the `wrf.exe`
@@ -54,4 +54,4 @@ executable is there. If it is, then you have successfully compiled WRF for nativ
 
 Once you have it successfully compiled, move on to the `run.md` readme in order to learn how to run
 WRF across either all or some of the MICs.  Compiling WRF for the MICs is needed if you want to run
-WRF in simultaneous mode (across the host and MICs) or native mode (across one or all MICs).
+WRF in symmetric mode (across the host and MICs) or native mode (across one or all MICs).
