@@ -90,25 +90,15 @@ Next, you need to make the appropriate changes to enable the MKL.  Refer heavily
 
     ```
     -L$MKLROOT/lib/mic/libmkl_lapack95_ilp64.a
-
     -Wl,--start-group
-
     -L$MKLROOT/lib/mic/libmkl_intel_ilp64.a
-
     -L$MKLROOT/lib/mic/libmkl_intel_thread.a
-
     -L$MKLROOT/lib/mic/libmkl_core.a
-
     -mkl
-
     -Wl,--end-group
-
     -lpthread
-
     -openmp
-
     -I$(MKLROOT)/include/intel64/lp64
-
     -I$(MKLROOT)/include
     ```
 
