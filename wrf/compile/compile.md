@@ -31,6 +31,8 @@ move on to `run.md` to learn how to run WRF across the host only or in symmetric
 host and the MICs.  Compiling WRF for the host is required to run in normal mode (host only) or 
 symmetric mode (across the host and the MICs).
 
+If you're on a NICS machine, load the HDF5-Parallel module and the NetCDF module.
+
 #2.0 Compiling WRF for the MICs
 
 ##2.1 Quick Steps
@@ -39,6 +41,7 @@ symmetric mode (across the host and the MICs).
 3. Next, make a new directory called `custom_configure` and put `configure_mic.wrf` into it.
 4. Rename `configure_mic.wrf` as `configure.wrf`.
 5. Check the library directories to make sure that they'll work.
+6. If you're on Beacon, make sure to load the NetCDF and HDF5-Parallel modules.
 6. Run that script.
 7. It will configure. Choose the option for the Intel Xeon Phi.
 8. All other options should be default.
@@ -70,8 +73,27 @@ First, make the changes as they are listed on the [Intel website](http://softwar
 ###Enabling MKL
 Next, you need to make the appropriate changes to enable the MKL.  Refer heavily to any of my provided
 `configure.wrf` files, and copy/paste the following *exactly* onto the appropriate lines.
-1. Add this line to the `FC` line:
-``
-alsdfkjlkj
-``
-dlkfjalsdkfj
+
+1. Copy/paste the following line onto the end of your `FC` and `CC` lines:
+    ```
+    -openmp -I$(MKLROOT)/include/intel64/lp64 -I$(MKLROOT)/include
+    ```
+2. Copy/paste the following line onto the end of your `ARCH_LOCAL` line:
+    ```
+    -DMKL_DFTI
+    ```
+3. Copy/paste the following flags into your `LDFLAGS_LOCAL` line:
+    ```
+    -L$MKLROOT/lib/mic/libmkl_lapack95_ilp64.a 
+    -Wl,--start-group  
+    -L$MKLROOT/lib/mic/libmkl_intel_ilp64.a 
+    -L$MKLROOT/lib/mic/libmkl_intel_thread.a 
+    -L$MKLROOT/lib/mic/libmkl_core.a 
+    -mkl 
+    -Wl,--end-group 
+    -lpthread  
+    -openmp 
+    -I$(MKLROOT)/include/intel64/lp64 
+    -I$(MKLROOT)/include
+    ```
+Making those changes will force WRF to use MKL as opposed to the standard Fortran LAPACK routines.
