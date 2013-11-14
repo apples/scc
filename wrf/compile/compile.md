@@ -75,25 +75,41 @@ Next, you need to make the appropriate changes to enable the MKL.  Refer heavily
 `configure.wrf` files, and copy/paste the following *exactly* onto the appropriate lines.
 
 1. Copy/paste the following line onto the end of your `FC` and `CC` lines:
+
     ```
     -openmp -I$(MKLROOT)/include/intel64/lp64 -I$(MKLROOT)/include
     ```
+
 2. Copy/paste the following line onto the end of your `ARCH_LOCAL` line:
+
     ```
     -DMKL_DFTI
     ```
+
 3. Copy/paste the following flags into your `LDFLAGS_LOCAL` line:
+
     ```
-    -L$MKLROOT/lib/mic/libmkl_lapack95_ilp64.a 
-    -Wl,--start-group  
-    -L$MKLROOT/lib/mic/libmkl_intel_ilp64.a 
-    -L$MKLROOT/lib/mic/libmkl_intel_thread.a 
-    -L$MKLROOT/lib/mic/libmkl_core.a 
-    -mkl 
-    -Wl,--end-group 
-    -lpthread  
-    -openmp 
-    -I$(MKLROOT)/include/intel64/lp64 
+    -L$MKLROOT/lib/mic/libmkl_lapack95_ilp64.a
+
+    -Wl,--start-group
+
+    -L$MKLROOT/lib/mic/libmkl_intel_ilp64.a
+
+    -L$MKLROOT/lib/mic/libmkl_intel_thread.a
+
+    -L$MKLROOT/lib/mic/libmkl_core.a
+
+    -mkl
+
+    -Wl,--end-group
+
+    -lpthread
+
+    -openmp
+
+    -I$(MKLROOT)/include/intel64/lp64
+
     -I$(MKLROOT)/include
     ```
+
 Making those changes will force WRF to use MKL as opposed to the standard Fortran LAPACK routines.
